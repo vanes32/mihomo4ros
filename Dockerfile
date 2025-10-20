@@ -18,8 +18,7 @@ RUN mkdir /out && \
 # Минимальный финальный образ
 FROM alpine:latest
 # Установка минимальных пакетов
-RUN apk update && \
-    apk add --no-cache ca-certificates tzdata && \
+RUN apk add --no-cache ca-certificates tzdata \
     if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "amd64" ]; then \
         nftables; \
     elif [ "$TARGETARCH" = "arm" ]; then \
