@@ -1,0 +1,40 @@
+# Этап сборки бинарника
+FROM --platform=$BUILDPLATFORM busybox:uclibc AS downloader
+ARG TARGETARCH
+ARG VERSION
+# Скачиваем бинарник прямо через wget из busybox
+RUN mkdir /out && \
+    if [ "$TARGETARCH" = "arm64" ]; then \
+        wget -O /out/mihomo.gz https://github.com/MetaCubeX/mihomo/releases/download/$VERSION/mihomo-linux-arm64-$VERSION.gz; \
+    elif [ "$TARGETARCH" = "arm" ]; then \
+        wget -O /out/mihomo.gz https://github.com/MetaCubeX/mihomo/releases/download/$VERSION/mihomo-linux-armv7-$VERSION.gz; \
+    elif [ "$TARGETARCH" = "amd64" ]; then \
+        wget -O /out/mihomo.gz https://github.com/MetaCubeX/mihomo/releases/download/$VERSION/mihomo-linux-amd64-v2-$VERSION.gz; \
+    else \
+        echo "Unsupported architecture: $TARGETARCH" && exit 1; \
+    fi && \
+    gunzip /out/mihomo.gz && \
+    chmod +x /out/mihomo
+# Минимальный финальный образ
+FROM alpine:latest
+# Установка минимальных пакетов
+RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "amd64" ]; then \
+        apk add --no-cache nftables ca-certificates tzdata; \
+    elif [ "$TARGETARCH" = "arm" ]; then \
+        apk add --no-cache iptables iptables-legacy ca-certificates tzdata && \
+        rm /usr/sbin/iptables /usr/sbin/iptables-save /usr/sbin/iptables-restore && \
+        ln -s /usr/sbin/iptables-legacy /usr/sbin/iptables && \
+        ln -s /usr/sbin/iptables-legacy-save /usr/sbin/iptables-save && \
+        ln -s /usr/sbin/iptables-legacy-restore /usr/sbin/iptables-restore \
+    else \
+        echo "Unsupported architecture: $TARGETARCH" && exit 1; \
+    fi
+
+# Копируем бинарник и скрипт
+COPY --from=downloader /out/mihomo /mihomo
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+# Создаем папку для AWG конфигов
+RUN mkdir -p /root/.config/mihomo/awg
+# Стартовый скрипт
+CMD ["/entrypoint.sh"]
