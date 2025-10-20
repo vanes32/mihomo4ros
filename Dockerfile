@@ -17,13 +17,16 @@ RUN mkdir /out && \
     chmod +x /out/mihomo
 # Минимальный финальный образ
 FROM alpine:latest
+ARG TARGETARCH
 # Установка минимальных пакетов
 RUN apk add --no-cache ca-certificates tzdata
 
 RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "amd64" ]; then \
-        apk add --no-cache nftables; \
+        apk update && \
+        apk add --no-cache ca-certificates tzdata nftables; \
     elif [ "$TARGETARCH" = "arm" ]; then \
-        apk add --no-cache iptables iptables-legacy && \
+        apk update && \
+        apk add --no-cache ca-certificates tzdata iptables iptables-legacy && \
         rm -f /usr/sbin/iptables /usr/sbin/iptables-save /usr/sbin/iptables-restore && \
         ln -s /usr/sbin/iptables-legacy /usr/sbin/iptables && \
         ln -s /usr/sbin/iptables-legacy-save /usr/sbin/iptables-save && \
@@ -31,6 +34,7 @@ RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "amd64" ]; then \
     else \
         echo "Unsupported architecture: $TARGETARCH" && exit 1; \
     fi
+
 
 # Копируем бинарник и скрипт
 COPY --from=downloader /out/mihomo /mihomo
