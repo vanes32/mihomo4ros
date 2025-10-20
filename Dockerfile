@@ -19,8 +19,6 @@ RUN mkdir /out && \
 FROM alpine:latest
 ARG TARGETARCH
 # Установка минимальных пакетов
-RUN apk add --no-cache ca-certificates tzdata
-
 RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "amd64" ]; then \
         apk update && \
         apk add --no-cache ca-certificates tzdata nftables; \
