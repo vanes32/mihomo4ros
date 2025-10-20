@@ -1,4 +1,4 @@
-name: Build and publish multi-arch Docker images ROS
+name: Build & publish & clean 
 
 on:
   workflow_dispatch:
