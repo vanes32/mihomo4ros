@@ -21,9 +21,9 @@ FROM alpine:latest
 RUN apk update && \
     apk add --no-cache ca-certificates tzdata && \
     if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "amd64" ]; then \
-        apk add --no-cache nftables; \
+        nftables; \
     elif [ "$TARGETARCH" = "arm" ]; then \
-        apk add --no-cache iptables iptables-legacy && \
+        iptables iptables-legacy && \
         rm -f /usr/sbin/iptables /usr/sbin/iptables-save /usr/sbin/iptables-restore && \
         ln -s /usr/sbin/iptables-legacy /usr/sbin/iptables && \
         ln -s /usr/sbin/iptables-legacy-save /usr/sbin/iptables-save && \
