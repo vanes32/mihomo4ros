@@ -217,14 +217,6 @@ EOF
 
   providers=""
 
-  # Всегда добавляем DIRECT
-  cat >> "$CONFIG_YAML" <<EOF
-  DIRECT:
-    type: file
-    path: $(basename "$DIRECT_YAML")
-$(health_check_block)
-EOF
-  providers="$providers DIRECT"
 
   # провайдер links, если есть LINKi
   if env | grep -qE '^LINK[0-9]*='; then
@@ -251,6 +243,15 @@ $(health_check_block)
 EOF
     providers="$providers $name"
   done
+    # Всегда добавляем DIRECT
+  cat >> "$CONFIG_YAML" <<EOF
+  DIRECT:
+    type: file
+    path: $(basename "$DIRECT_YAML")
+$(health_check_block)
+EOF
+  providers="$providers DIRECT"
+
 
   # провайдер AWG
   if find "$AWG_DIR" -name "*.conf" | grep -q . 2>/dev/null; then
@@ -313,9 +314,9 @@ EOF
     echo "  - name: quic"
     echo "    type: select"
     echo "    proxies:"
+	  echo "      - PASS"
     echo "      - REJECT-DROP"
-    echo "      - PASS"
-
+    
     echo
     echo "rules:"
     echo "  - AND,((NETWORK,udp),(DST-PORT,443)),quic"
@@ -382,6 +383,7 @@ run() {
   generate_awg_yaml
   link_file_mihomo
   config_file_mihomo
+
 
   log "Starting mihomo..."
   exec ./mihomo
