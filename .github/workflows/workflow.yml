@@ -66,10 +66,10 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           build-args: |
-            TAG=$VERSION
+            TAG=${{ env.VERSION }}
           tags: |
             ghcr.io/vanes32/mihomo4ros:latest
-            ghcr.io/vanes32/mihomo4ros:$VERSION
+            ghcr.io/vanes32/mihomo4ros:${{ env.VERSION }}
 
       - name: Log in to GHCR with crane
         run: echo "${GITHUB_TOKEN}" | crane auth login ghcr.io -u ${PACKAGE_OWNER} --password-stdin
