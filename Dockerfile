@@ -33,7 +33,6 @@ RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "amd64" ]; then \
         echo "Unsupported architecture: $TARGETARCH" && exit 1; \
     fi
 
-
 # Копируем бинарник и скрипт
 COPY --from=downloader /out/mihomo /mihomo
 COPY entrypoint.sh /entrypoint.sh
