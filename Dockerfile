@@ -1,15 +1,15 @@
 # Этап сборки бинарника
 FROM --platform=$BUILDPLATFORM busybox:uclibc AS downloader
 ARG TARGETARCH
-ARG VERSION
+ARG TAG
 # Скачиваем бинарник прямо через wget из busybox
 RUN mkdir /out && \
     if [ "$TARGETARCH" = "arm64" ]; then \
-        wget -O /out/mihomo.gz https://github.com/MetaCubeX/mihomo/releases/download/$VERSION/mihomo-linux-arm64-$VERSION.gz; \
+        wget -O /out/mihomo.gz https://github.com/MetaCubeX/mihomo/releases/download/$TAG/mihomo-linux-arm64-$TAG.gz; \
     elif [ "$TARGETARCH" = "arm" ]; then \
-        wget -O /out/mihomo.gz https://github.com/MetaCubeX/mihomo/releases/download/$VERSION/mihomo-linux-armv7-$VERSION.gz; \
+        wget -O /out/mihomo.gz https://github.com/MetaCubeX/mihomo/releases/download/$TAG/mihomo-linux-armv7-$TAG.gz; \
     elif [ "$TARGETARCH" = "amd64" ]; then \
-        wget -O /out/mihomo.gz https://github.com/MetaCubeX/mihomo/releases/download/$VERSION/mihomo-linux-amd64-v2-$VERSION.gz; \
+        wget -O /out/mihomo.gz https://github.com/MetaCubeX/mihomo/releases/download/$TAG/mihomo-linux-amd64-v2-$TAG.gz; \
     else \
         echo "Unsupported architecture: $TARGETARCH" && exit 1; \
     fi && \
