@@ -18,14 +18,16 @@ RUN mkdir /out && \
 # Минимальный финальный образ
 FROM alpine:latest
 # Установка минимальных пакетов
-RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "amd64" ]; then \
-        apk add --no-cache nftables ca-certificates tzdata; \
+RUN apk update && \
+    apk add --no-cache ca-certificates tzdata && \
+    if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "amd64" ]; then \
+        apk add --no-cache nftables; \
     elif [ "$TARGETARCH" = "arm" ]; then \
-        apk add --no-cache iptables iptables-legacy ca-certificates tzdata && \
-        rm /usr/sbin/iptables /usr/sbin/iptables-save /usr/sbin/iptables-restore && \
+        apk add --no-cache iptables iptables-legacy && \
+        rm -f /usr/sbin/iptables /usr/sbin/iptables-save /usr/sbin/iptables-restore && \
         ln -s /usr/sbin/iptables-legacy /usr/sbin/iptables && \
         ln -s /usr/sbin/iptables-legacy-save /usr/sbin/iptables-save && \
-        ln -s /usr/sbin/iptables-legacy-restore /usr/sbin/iptables-restore \
+        ln -s /usr/sbin/iptables-legacy-restore /usr/sbin/iptables-restore; \
     else \
         echo "Unsupported architecture: $TARGETARCH" && exit 1; \
     fi
