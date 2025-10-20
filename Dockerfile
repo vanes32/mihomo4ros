@@ -18,12 +18,12 @@ RUN mkdir /out && \
 # Минимальный финальный образ
 FROM alpine:latest
 # Установка минимальных пакетов
+RUN apk add --no-cache ca-certificates tzdata
+
 RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "amd64" ]; then \
-        apk update && \
-        apk add --no-cache ca-certificates tzdata nftables; \
+        apk add --no-cache nftables; \
     elif [ "$TARGETARCH" = "arm" ]; then \
-        apk update && \
-        apk add --no-cache ca-certificates tzdata iptables iptables-legacy && \
+        apk add --no-cache iptables iptables-legacy && \
         rm -f /usr/sbin/iptables /usr/sbin/iptables-save /usr/sbin/iptables-restore && \
         ln -s /usr/sbin/iptables-legacy /usr/sbin/iptables && \
         ln -s /usr/sbin/iptables-legacy-save /usr/sbin/iptables-save && \
